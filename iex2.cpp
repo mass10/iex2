@@ -23,12 +23,14 @@ CComPtr<IDispatch> CreateObjectPtr(LPCTSTR name)
     return NULL;
 }
 
+/// <summary>
+/// CoInitialize ～ CoUninitialize の管理
+/// </summary>
 class CoScope
 {
 public:
     CoScope();
     ~CoScope();
-
 };
 
 CoScope::CoScope()
@@ -43,6 +45,10 @@ CoScope::~CoScope()
     CoUninitialize();
 }
 
+/// <summary>
+/// Internet Explorer を開きます。
+/// </summary>
+/// <param name="url"></param>
 void LaunchInternetExplorer(LPCTSTR url)
 {
     CoScope __scope__;
@@ -84,7 +90,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    LaunchInternetExplorer(_T("about:blank"));
+    LaunchInternetExplorer(lpCmdLine);
 
     return 0;
 }
