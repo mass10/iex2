@@ -49,11 +49,6 @@ jobs:
       run: |
           Invoke-WebRequest -Uri "https://github.com/mass10/r-gh-create-release/releases/latest/download/r-gh-create-release.exe" -OutFile "r-gh-create-release.exe"
 
-      # DOWNLOAD ARTIFACTS
-    - name: Download artifacts
-      uses: actions/download-artifact@v2
-      with:
-          name: artifacts-3c9f9448-a4e1-4b41-ba5f-38366147e211
       # CREATE RELEASE AND UPLOAD EXECUTABLE FILE
     - name: Create a release and publish attachments.
       run: |
