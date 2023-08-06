@@ -6,52 +6,48 @@
 name: MSBuild
 
 on:
-  push:
-    branches: [ "main" ]
-  # Can be triggerred on Web UI of GitHub.
-  workflow_dispatch:
+    push:
+        branches: [ "main" ]
+    # Can be triggerred on Web UI of GitHub.
+    workflow_dispatch:
 
 env:
-  # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: .
+    # Path to the solution file relative to the root of the project.
+    SOLUTION_FILE_PATH: .
 
-  # Configuration type to build.
-  # You can convert this to a build matrix if you need coverage of multiple configuration types.
-  # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  BUILD_CONFIGURATION: Release
+    # Configuration type to build.
+    # You can convert this to a build matrix if you need coverage of multiple configuration types.
+    # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    BUILD_CONFIGURATION: Release
 
 permissions:
-  contents: read
+    contents: write
 
 jobs:
-  build:
-    runs-on: windows-latest
+    build:
+        runs-on: windows-latest
 
-    steps:
-    - uses: actions/checkout@v3
+        steps:
+          - uses: actions/checkout@v3
 
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+          - name: Add MSBuild to PATH
+            uses: microsoft/setup-msbuild@v1.0.2
 
-#   - name: Restore NuGet packages
-#     working-directory: ${{env.GITHUB_WORKSPACE}}
-#     run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+            # BUILD PROJECT
+          - name: Build
+            working-directory: ${{env.GITHUB_WORKSPACE}}
+            # Add additional options to the MSBuild command line here (like platform or verbosity level).
+            # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
+            run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
 
-      # BUILD PROJECT
-    - name: Build
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      # Add additional options to the MSBuild command line here (like platform or verbosity level).
-      # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
-      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+            # DOWNLOAD CRATE
+          - name: download utility crate
+            run: |
+                Invoke-WebRequest -Uri "https://github.com/mass10/r-gh-create-release/releases/latest/download/r-gh-create-release.exe" -OutFile "r-gh-create-release.exe"
 
-      # DOWNLOAD CRATE
-    - name: download utility crate
-      run: |
-          Invoke-WebRequest -Uri "https://github.com/mass10/r-gh-create-release/releases/latest/download/r-gh-create-release.exe" -OutFile "r-gh-create-release.exe"
-
-      # CREATE RELEASE AND UPLOAD EXECUTABLE FILE
-    - name: Create a release and publish attachments.
-      run: |
-          .\r-gh-create-release --file bin\Release\iex2.exe
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            # CREATE RELEASE AND UPLOAD EXECUTABLE FILE
+          - name: Create a release and publish attachments.
+            run: |
+                .\r-gh-create-release --file bin\Release\iex2.exe
+            env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
