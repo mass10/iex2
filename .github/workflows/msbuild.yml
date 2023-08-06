@@ -52,6 +52,6 @@ jobs:
       # CREATE RELEASE AND UPLOAD EXECUTABLE FILE
     - name: Create a release and publish attachments.
       run: |
-          .\r-gh-create-release --file bin\Debug\iex2.exe
+          .\r-gh-create-release --file bin\Release\iex2.exe
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
