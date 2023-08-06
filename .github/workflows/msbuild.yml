@@ -33,12 +33,30 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
 
-    - name: Restore NuGet packages
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+#   - name: Restore NuGet packages
+#     working-directory: ${{env.GITHUB_WORKSPACE}}
+#     run: nuget restore ${{env.SOLUTION_FILE_PATH}}
 
+      # BUILD PROJECT
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+
+      # DOWNLOAD CRATE
+    - name: download utility crate
+      run: |
+          Invoke-WebRequest -Uri "https://github.com/mass10/r-gh-create-release/releases/latest/download/r-gh-create-release.exe" -OutFile "r-gh-create-release.exe"
+
+      # DOWNLOAD ARTIFACTS
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+          name: artifacts-3c9f9448-a4e1-4b41-ba5f-38366147e211
+      # CREATE RELEASE AND UPLOAD EXECUTABLE FILE
+    - name: Create a release and publish attachments.
+      run: |
+          .\r-gh-create-release --file bin\Debug\iex2.exe
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
