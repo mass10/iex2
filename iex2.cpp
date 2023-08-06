@@ -15,10 +15,10 @@ CLSID GetClsID(LPCTSTR name)
 CComPtr<IDispatch> CreateObjectPtr(LPCTSTR name)
 {
     CLSID clsid = GetClsID(name);
-    CComPtr<IDispatch> pDisp = NULL;
-    HRESULT hr = CoCreateInstance(clsid, NULL, CLSCTX_LOCAL_SERVER, IID_IDispatch, (void**)&pDisp);
+    CComPtr<IDispatch> p = NULL;
+    HRESULT hr = CoCreateInstance(clsid, NULL, CLSCTX_LOCAL_SERVER, IID_IDispatch, (void**)&p);
     if (SUCCEEDED(hr)) {
-        return pDisp;
+        return p;
     }
     return NULL;
 }
@@ -26,21 +26,21 @@ CComPtr<IDispatch> CreateObjectPtr(LPCTSTR name)
 /// <summary>
 /// CoInitialize ～ CoUninitialize の管理
 /// </summary>
-class CoScope
+class co_scope
 {
 public:
-    CoScope();
-    ~CoScope();
+    co_scope();
+    ~co_scope();
 };
 
-CoScope::CoScope()
+co_scope::co_scope()
 {
     if (S_OK != CoInitialize(NULL))
     {
     }
 }
 
-CoScope::~CoScope()
+co_scope::~co_scope()
 {
     CoUninitialize();
 }
@@ -51,20 +51,19 @@ CoScope::~CoScope()
 /// <param name="url"></param>
 void LaunchInternetExplorer(LPCTSTR url)
 {
-    CoScope __scope__;
+    co_scope co;
 
     // Internet Explorer の COM 参照
-    CComPtr<IDispatch> pDisp = CreateObjectPtr(_T("InternetExplorer.Application"));
-    CComQIPtr<IWebBrowser2> pBrowser = (CComQIPtr<IWebBrowser2>)pDisp;
-    if (pBrowser == NULL)
+    CComPtr<IDispatch> p = CreateObjectPtr(_T("InternetExplorer.Application"));
+    CComQIPtr<IWebBrowser2> browser = (CComQIPtr<IWebBrowser2>)p;
+    if (browser == NULL)
     {
         return;
     }
 
-    pBrowser->put_Visible(VARIANT_TRUE);
     if (url && url[0])
     {
-        pBrowser->Navigate(CComBSTR(url), NULL, NULL, NULL, NULL);
+        browser->Navigate(CComBSTR(url), NULL, NULL, NULL, NULL);
     }
     else
     {
@@ -76,10 +75,12 @@ void LaunchInternetExplorer(LPCTSTR url)
 
     // Get the HWND of the Internet Explorer window
     HWND hwnd;
-    pBrowser->get_HWND((SHANDLE_PTR*)&hwnd);
+    browser->get_HWND((SHANDLE_PTR*)&hwnd);
 
     // Bring the window to the front
     SetForegroundWindow(hwnd);
+
+    browser->put_Visible(VARIANT_TRUE);
 }
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -90,6 +91,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
+    // Internet Explorer を開きます。
     LaunchInternetExplorer(lpCmdLine);
 
     return 0;
