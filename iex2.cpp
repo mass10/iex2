@@ -4,6 +4,11 @@
 #include "framework.h"
 #include "iex2.h"
 
+/// <summary>
+/// CLSID を検索します。
+/// </summary>
+/// <param name="name">名前</param>
+/// <returns></returns>
 CLSID GetClsID(LPCTSTR name)
 {
     CLSID clsid;
@@ -12,6 +17,11 @@ CLSID GetClsID(LPCTSTR name)
     return clsid;
 }
 
+/// <summary>
+/// 指定された CLSID の COM 参照を返します。
+/// </summary>
+/// <param name="name"></param>
+/// <returns></returns>
 CComPtr<IDispatch> CreateObjectPtr(LPCTSTR name)
 {
     CLSID clsid = GetClsID(name);
@@ -29,17 +39,31 @@ CComPtr<IDispatch> CreateObjectPtr(LPCTSTR name)
 class co_scope
 {
 public:
+    /// <summary>
+    /// コンストラクター
+    /// </summary>
     co_scope();
+
+    /// <summary>
+    /// デストラクター
+    /// </summary>
     ~co_scope();
 };
 
+/// <summary>
+/// コンストラクター
+/// </summary>
 co_scope::co_scope()
 {
     if (S_OK != CoInitialize(NULL))
     {
+        // NOP
     }
 }
 
+/// <summary>
+/// デストラクター
+/// </summary>
 co_scope::~co_scope()
 {
     CoUninitialize();
@@ -83,13 +107,23 @@ void LaunchInternetExplorer(LPCTSTR url)
     browser->put_Visible(VARIANT_TRUE);
 }
 
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
+/// <summary>
+/// ウィンドウアプリケーションのエントリーポイント
+/// </summary>
+/// <param name="hInstance"></param>
+/// <param name="hPrevInstance"></param>
+/// <param name="lpCmdLine"></param>
+/// <param name="nCmdShow"></param>
+/// <returns></returns>
+int APIENTRY wWinMain(
+    _In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR lpCmdLine,
     _In_ int nCmdShow)
 {
+    UNREFERENCED_PARAMETER(hInstance);
     UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
+    UNREFERENCED_PARAMETER(nCmdShow);
 
     // Internet Explorer を開きます。
     LaunchInternetExplorer(lpCmdLine);
