@@ -13,12 +13,16 @@ CLSID GetClsID(LPCTSTR name)
 {
     CLSID clsid;
     if (S_OK != CLSIDFromProgID(name, &clsid))
+    {
         return clsid;
+    }
     return clsid;
 }
 
 /// <summary>
 /// 指定された CLSID の COM 参照を返します。
+/// 
+/// * CLSCTX_LOCAL_SERVER ... ローカルコンピューター上の、異なるプロセスを意味します。
 /// </summary>
 /// <param name="name"></param>
 /// <returns></returns>
@@ -27,7 +31,8 @@ CComPtr<IDispatch> CreateObjectPtr(LPCTSTR name)
     CLSID clsid = GetClsID(name);
     CComPtr<IDispatch> p = NULL;
     HRESULT hr = CoCreateInstance(clsid, NULL, CLSCTX_LOCAL_SERVER, IID_IDispatch, (void**)&p);
-    if (SUCCEEDED(hr)) {
+    if (SUCCEEDED(hr))
+    {
         return p;
     }
     return NULL;
