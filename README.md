@@ -1,5 +1,5 @@
 # iex2
- Internet Explorer Launcher
+ 　is Internet Explorer Launcher.
 
  ![image](https://github.com/mass10/iex2/assets/2055840/25000ed5-b271-4381-9c36-35072027abb5)
 
