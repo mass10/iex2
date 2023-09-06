@@ -33,19 +33,19 @@ jobs:
           - name: Add MSBuild to PATH
             uses: microsoft/setup-msbuild@v1.0.2
 
-            # BUILD PROJECT
+            # BUILD PROJECT. プロジェクトをビルドします。
           - name: Build
             working-directory: ${{env.GITHUB_WORKSPACE}}
             # Add additional options to the MSBuild command line here (like platform or verbosity level).
             # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
             run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
 
-            # DOWNLOAD CRATE
+            # DOWNLOAD UTILITY CRATE. ユーティリティ crate をダウンロードします。
           - name: download utility crate
             run: |
                 Invoke-WebRequest -Uri "https://github.com/mass10/r-gh-create-release/releases/latest/download/r-gh-create-release.exe" -OutFile "r-gh-create-release.exe"
 
-            # CREATE RELEASE AND UPLOAD EXECUTABLE FILE
+            # CREATE RELEASE AND UPLOAD EXECUTABLE FILE. このリポジトリに Release を作成し、実行ファイルを添付します。
           - name: Create a release and publish attachments.
             run: |
                 .\r-gh-create-release --file x64\Release\iex2.exe
